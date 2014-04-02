@@ -141,15 +141,9 @@ namespace WebApiThrottle
                     //log blocked request
                     if (Logger != null) Logger.Log(ComputeLogEntry(requestId, identity, throttleCounter, rateLimitPeriod.ToString(), rateLimit, request));
                    
-                    string message;
-                    if (!string.IsNullOrEmpty(QuotaExceededMessage))
-                        message = QuotaExceededMessage;
-                    else
-                        message = "API calls quota exceeded! maximum admitted {0} per {1}.";
-
                     //break execution
                     return QuotaExceededResponse(request,
-                        string.Format(message, rateLimit, rateLimitPeriod),
+                        GetQuotaExceededValue(rateLimit, rateLimitPeriod),
                         QuotaExceededResponseCode,
                         RetryAfterFrom(throttleCounter.Timestamp, rateLimitPeriod));
                 }
@@ -157,6 +151,21 @@ namespace WebApiThrottle
 
             //no throttling required
             return base.SendAsync(request, cancellationToken);
+        }
+
+        protected virtual object GetQuotaExceededValue(long rateLimit, RateLimitPeriod rateLimitPeriod)
+        {
+            // allows subclasses to return an object
+            // My client expects the response in form of: { status: 403, message: "Per Minute Limit Exceeded" }
+
+            string message;
+
+            if (!string.IsNullOrEmpty(QuotaExceededMessage))
+                message = QuotaExceededMessage;
+            else
+                message = "API calls quota exceeded! maximum admitted {0} per {1}.";
+
+            return string.Format(message, rateLimit, rateLimitPeriod);
         }
 
         protected virtual RequestIdentity SetIndentity(HttpRequestMessage request)
@@ -347,7 +356,7 @@ namespace WebApiThrottle
             return false;
         }
 
-        private Task<HttpResponseMessage> QuotaExceededResponse(HttpRequestMessage request, string message, HttpStatusCode responseCode, string retryAfter)
+        private Task<HttpResponseMessage> QuotaExceededResponse(HttpRequestMessage request, object message, HttpStatusCode responseCode, string retryAfter)
         {
             var response = request.CreateResponse(responseCode, message);
             response.Headers.Add("Retry-After", new string[] { retryAfter });
