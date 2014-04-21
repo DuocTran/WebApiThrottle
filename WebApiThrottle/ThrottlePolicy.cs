@@ -12,6 +12,13 @@ namespace WebApiThrottle
     [Serializable]
     public class ThrottlePolicy
     {
+        public ThrottlePolicy()
+        {
+            this.IpRules = new Dictionary<string, RateLimits>();
+            this.ClientRules = new Dictionary<string, RateLimits>();
+            this.EndpointRules = new Dictionary<string, RateLimits>();
+        }
+
         /// <summary>
         /// Enables IP throttling
         /// </summary>
@@ -69,10 +76,6 @@ namespace WebApiThrottle
             policy.ClientThrottling = settings.ClientThrottling;
             policy.EndpointThrottling = settings.EndpointThrottling;
             policy.StackBlockedRequests = settings.StackBlockedRequests;
-
-            policy.IpRules = new Dictionary<string, RateLimits>();
-            policy.ClientRules = new Dictionary<string, RateLimits>();
-            policy.EndpointRules = new Dictionary<string, RateLimits>();
 
             foreach (var item in rules) //.Where(r=> r.PolicyType == ThrottlePolicyType.IpThrottling))
             {
