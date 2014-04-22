@@ -12,13 +12,6 @@ namespace WebApiThrottle
     [Serializable]
     public class ThrottlePolicy
     {
-        public ThrottlePolicy()
-        {
-            this.IpRules = new Dictionary<string, RateLimits>();
-            this.ClientRules = new Dictionary<string, RateLimits>();
-            this.EndpointRules = new Dictionary<string, RateLimits>();
-        }
-
         /// <summary>
         /// Enables IP throttling
         /// </summary>
@@ -52,7 +45,16 @@ namespace WebApiThrottle
         /// </summary>
         public ThrottlePolicy(long? perSecond = null, long? perMinute = null, long? perHour = null, long? perDay = null, long? perWeek = null)
         {
+            IpRules = new Dictionary<string, RateLimits>();
+            ClientRules = new Dictionary<string, RateLimits>();
+            EndpointRules = new Dictionary<string, RateLimits>();
+
+            ClientWhitelist = new List<string>();
+            EndpointWhitelist = new List<string>();
+            IpWhitelist = new List<string>();
+
             Rates = new Dictionary<RateLimitPeriod, long>();
+
             if (perSecond.HasValue) Rates.Add(RateLimitPeriod.Second, perSecond.Value);
             if (perMinute.HasValue) Rates.Add(RateLimitPeriod.Minute, perMinute.Value);
             if (perHour.HasValue) Rates.Add(RateLimitPeriod.Hour, perHour.Value);
@@ -92,6 +94,22 @@ namespace WebApiThrottle
                     case ThrottlePolicyType.EndpointThrottling:
                         policy.EndpointRules.Add(item.Entry, rateLimit);
                         break;
+                }
+            }
+
+            foreach (var item  in whitelists)
+            {
+                switch (item.PolicyType)
+                {
+                    case ThrottlePolicyType.IpThrottling:
+                    policy.IpWhitelist.Add(item.Entry);
+                    break;
+                    case ThrottlePolicyType.ClientThrottling:
+                    policy.ClientWhitelist.Add(item.Entry);
+                    break;
+                    case ThrottlePolicyType.EndpointThrottling:
+                    policy.EndpointWhitelist.Add(item.Entry);
+                    break;
                 }
             }
 

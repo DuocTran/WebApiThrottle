@@ -41,6 +41,8 @@ namespace WebApiThrottle
             {
                 foreach (ThrottlePolicyRuleConfigurationElement rule in policyConfig.Rules)
                 {
+                    ThrottlePolicyTypeValidator.EnsureValid(rule.PolicyType);
+
                     rules.Add(new ThrottlePolicyRule
                     {
                         Entry = rule.Entry,
@@ -63,6 +65,8 @@ namespace WebApiThrottle
             {
                 foreach (ThrottlePolicyWhitelistConfigurationElement whitelist in policyConfig.Whitelists)
                 {
+                    ThrottlePolicyTypeValidator.EnsureValid(whitelist.PolicyType);
+
                     whitelists.Add(new ThrottlePolicyWhitelist
                     {
                         Entry = whitelist.Entry,

@@ -90,6 +90,7 @@
     <Compile Include="ThrottlePolicySettings.cs" />
     <Compile Include="ThrottlePolicyRule.cs" />
     <Compile Include="ThrottlePolicyType.cs" />
+    <Compile Include="ThrottlePolicyTypeValidator.cs" />
     <Compile Include="ThrottlePolicyWhitelist.cs" />
     <Compile Include="ThrottlingHandler.cs" />
     <Compile Include="TracingThrottleLogger.cs" />

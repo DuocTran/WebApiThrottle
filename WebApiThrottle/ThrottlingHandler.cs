@@ -307,15 +307,15 @@ namespace WebApiThrottle
         private bool IsWhitelisted(RequestIdentity requestIdentity)
         {
             if (Policy.IpThrottling)
-                if (Policy.IpWhitelist != null && ContainsIp(Policy.IpWhitelist, requestIdentity.ClientIp))
+                if (Policy.IpWhitelist.Any() && ContainsIp(Policy.IpWhitelist, requestIdentity.ClientIp))
                     return true;
 
             if (Policy.ClientThrottling)
-                if (Policy.ClientWhitelist != null && Policy.ClientWhitelist.Contains(requestIdentity.ClientKey))
+                if (/*Policy.ClientWhitelist.Any() &&*/ Policy.ClientWhitelist.Contains(requestIdentity.ClientKey))
                     return true;
 
             if (Policy.EndpointThrottling)
-                if (Policy.EndpointWhitelist != null && Policy.EndpointWhitelist.Any(x => requestIdentity.Endpoint.Contains(x.ToLowerInvariant())))
+                if (/*Policy.EndpointWhitelist.Any() &&*/ Policy.EndpointWhitelist.Any(x => requestIdentity.Endpoint.Contains(x.ToLowerInvariant())))
                     return true;
 
             return false;
